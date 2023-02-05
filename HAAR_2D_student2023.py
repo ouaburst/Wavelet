@@ -66,5 +66,13 @@ print ('h0', h0)
 print ('s0', s0)
 
 # Matrix multiplication horizontally
+print("----- horizontal_matrix_mult -----")
+horizontal_matrix_mult = matrix_multiplication(s0, h0)
+print(horizontal_matrix_mult)
 
-print(matrix_multiplication(s0, h0))
+# Matrix multiplication vertically
+print("----- vertical_matrix_mult -----")
+vertical_matrix_mult = matrix_multiplication(np.transpose(h0),horizontal_matrix_mult)
+print(vertical_matrix_mult)
+
+pyplot.imshow(vertical_matrix_mult, cmap=pyplot.get_cmap('gray'))
