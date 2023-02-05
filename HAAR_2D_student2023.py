@@ -56,8 +56,8 @@ def Wavelet_matrix(data, wavelet_type='haar'):
     
     return h0, s0
 
-def matrix_multiplication(A, B):
-    return np.matmul(A, B)
+#def matrix_multiplication(A, B):
+#    return np.matmul(A, B)
 
 # Calculate h0 and s0 using the Wavelet_matrix function
 h0, s0 = Wavelet_matrix(data,'haar')
@@ -66,13 +66,12 @@ print ('h0', h0)
 print ('s0', s0)
 
 # Matrix multiplication horizontally
-print("----- horizontal_matrix_mult -----")
-horizontal_matrix_mult = matrix_multiplication(s0, h0)
-print(horizontal_matrix_mult)
+#print("----- horizontal_matrix_mult -----")
+#horizontal_matrix_mult = np.matmul(s0, h0)
+#print(horizontal_matrix_mult)
 
-# Matrix multiplication vertically
-print("----- vertical_matrix_mult -----")
-vertical_matrix_mult = matrix_multiplication(np.transpose(h0),horizontal_matrix_mult)
-print(vertical_matrix_mult)
+# Wavelet transformation for 2D matrix
+transform_matrix = np.matmul(np.transpose(h0),np.matmul(s0,h0))
+print(transform_matrix)
 
-pyplot.imshow(vertical_matrix_mult, cmap=pyplot.get_cmap('gray'))
+pyplot.imshow(transform_matrix, cmap=pyplot.get_cmap('gray'))
