@@ -70,7 +70,7 @@ print ('s0', s0)
 #horizontal_matrix_mult = np.matmul(s0, h0)
 #print(horizontal_matrix_mult)
 
-# Wavelet transformation for 2D matrix
+# Wavelet transformation for 2D matrix Eq7.5
 transform_matrix = np.matmul(np.transpose(h0),np.matmul(s0,h0))
 print(transform_matrix)
 
