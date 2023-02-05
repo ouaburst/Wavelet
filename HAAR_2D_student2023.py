@@ -38,7 +38,7 @@ def Wavelet_matrix(data, wavelet_type='haar'):
     Calculates h0 and s0 using the 2D discrete wavelet transform (DWT).
     
     data: 2D matrix containing the image data
-    wavelet_type: type of wavelet to be used for the DWT (default is 'db1')
+    wavelet_type: type of wavelet to be used for the DWT (default is 'haar')
     
     Returns: h0, s0 (the horizontal and vertical detail coefficients)
     """
