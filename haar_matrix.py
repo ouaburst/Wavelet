@@ -26,6 +26,6 @@ def haarMatrix(n, normalized=False):
     h = np.vstack((h_n, h_i))
     return h
 
-haar_matrix = haarMatrix(4096)
+haar_matrix = haarMatrix(4).transpose()
 
 print (haar_matrix,True)
