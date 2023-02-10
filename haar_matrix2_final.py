@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Fri Feb 10 14:32:40 2023
+
+@author: Oualid Burström
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Thu Feb  9 22:41:37 2023
 
 @author: Budokan
@@ -7,7 +14,7 @@ Created on Thu Feb  9 22:41:37 2023
 
 import numpy as np
 
-def generate_matrix(n):
+def Haar_matrix(n):
     m = 0
     if n % 2 != 0:
         raise ValueError("n must be an even number")
@@ -18,7 +25,6 @@ def generate_matrix(n):
         matrix[m, i + n // 2] = 0.5        
         matrix[m+1, i + n // 2] = -0.5
         m += 2
-        print("i=", i)
     return matrix
 
-print("haar matrix \n", generate_matrix(4))
+print("Haar matrix \n", Haar_matrix(4096))

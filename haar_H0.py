@@ -39,7 +39,7 @@ original_matrix = np.array([[9, 7, 6, 2], [5, 3, 4, 4], [8, 2, 4, 0], [6, 0, 2, 
 # Perform the horizontal Haar transform
 horizontal_haar = haarTransformHorizontal(original_matrix)
 
-print("Horizontal Haar transform of the original matrix:\n", horizontal_haar)
+#print("Horizontal Haar transform of the original matrix:\n", horizontal_haar)
 
 
 
@@ -48,4 +48,6 @@ print("Horizontal Haar transform of the original matrix:\n", horizontal_haar)
 matrix1 = np.array([[9, 7, 6, 2], [5, 3, 4, 4], [8, 2, 4, 0], [6, 0, 2, 2]])
 matrix2 = np.array([[0.5, 0, 0.5, 0], [0.5, 0, -0.5, 0], [0, 0.5, 0, 0.5], [0, 0.5, 0, -0.5]])
 result2 = np.dot(matrix1, matrix2)
-print("result2\n", result2)
+#print("result2\n", result2)
+
+print(haarMatrix(6,normalized=False))
