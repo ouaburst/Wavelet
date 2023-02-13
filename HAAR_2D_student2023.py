@@ -78,31 +78,3 @@ vertical_matrix_mult = np.matmul(np.transpose(h0), horizontal_matrix_mult)
 print(vertical_matrix_mult)
 
 pyplot.imshow(vertical_matrix_mult, cmap=pyplot.get_cmap('gray'))
-
-
-# --- Recontruct the image
-
-# --- Compute the inverse Haar matrix ---
-
-datasize = 4096
-inv_h0 = np.transpose(h0) / (datasize//2)
-
-# --- Decompress the image ---
-
-# Vertical matrix multiplication
-# inv_h0.vertical_matrix_mult
-
-print("----- vertical_matrix_mult_inv -----")
-vertical_matrix_mult_inv = np.matmul(inv_h0, vertical_matrix_mult)
-print(vertical_matrix_mult_inv)
-
-pyplot.imshow(vertical_matrix_mult_inv, cmap=pyplot.get_cmap('gray'))
-
-# Horizontal matrix multiplication
-# vertical_matrix_mult_inv.inv_h0
-
-print("----- horizontal_matrix_mult_inv -----")
-horizontal_matrix_mult_inv = np.matmul(vertical_matrix_mult_inv, inv_h0)
-print(horizontal_matrix_mult_inv)
-
-pyplot.imshow(horizontal_matrix_mult_inv, cmap=pyplot.get_cmap('gray'))
