@@ -4,34 +4,17 @@ Created on Mon Jan 30 13:25:08 2023
 
 @author: MNBE
 """
-# fil för datainläsning 
 
-#import matplotlib.pyplot as plt
 import numpy as np
-#import cupy as cp
-#import os
-#from mpl_toolkits.mplot3d import Axes3D
 from PIL import Image
 from matplotlib import pyplot
-#from keras.datasets import mnist
-import time
-import pywt
-import pywt.data
-
-tic = time.time()
-# Load image
-original = pywt.data.camera()
 image = Image.open('data_uppgift1.jpg').convert('LA') 
 data = np.copy(np.asarray(image))
 datasize=4096
 data=data[0:datasize, 0:datasize, 0]
 data=data.astype('uint8')
-#(train_X, train_y), (test_X, test_y) = mnist.load_data()
-#Xfull=train_X[0]
 Xfull=data
 X=Xfull[0:datasize,0:datasize]
-#X=[[9,7,6,2],[5,3,4,4],[8,2,4,0],[6,0,2,2]]
-#pyplot.imshow(X, cmap=pyplot.get_cmap('gray'))
 
 # --- Haar matrix ---
 
@@ -55,7 +38,7 @@ def haar_matrix(n):
     # Return the resulting matrix
     return matrix
 
-# --- Compress the image ---
+# --- First sweep ---
 
 h0 = haar_matrix(4096)
 s0 = data
@@ -69,7 +52,6 @@ print(horizontal_matrix_mult)
 
 pyplot.imshow(horizontal_matrix_mult, cmap=pyplot.get_cmap('gray'))
 
-
 # Vertical matrix multiplication
 # transpose(h0).(s0.h0)
 
@@ -78,3 +60,59 @@ vertical_matrix_mult = np.matmul(np.transpose(h0), horizontal_matrix_mult)
 print(vertical_matrix_mult)
 
 pyplot.imshow(vertical_matrix_mult, cmap=pyplot.get_cmap('gray'))
+
+
+# --- Second sweep ---
+compressed1 = np.copy(vertical_matrix_mult)
+h1 = haar_matrix(4096)
+
+# Horizontal matrix multiplication
+horizontal_matrix_mult1 = np.matmul(compressed1, h1)
+
+# Display intermediate result
+pyplot.imshow(horizontal_matrix_mult1, cmap=pyplot.get_cmap('gray'))
+
+# Vertical matrix multiplication
+vertical_matrix_mult1 = np.matmul(np.transpose(h1), horizontal_matrix_mult1)
+
+# Display final result
+pyplot.imshow(vertical_matrix_mult1, cmap=pyplot.get_cmap('gray'))
+
+
+# --- Inverse Haar wavelet transform (second sweep) ---
+# Vertical matrix multiplication (inverse)
+# h1.(s2')
+
+print("----- inverse_vertical_matrix_mult1 -----")
+inverse_vertical_matrix_mult1 = np.matmul(h1, vertical_matrix_mult1)
+print(inverse_vertical_matrix_mult1)
+
+# Horizontal matrix multiplication (inverse)
+# (s1')h1
+
+print("----- inverse_horizontal_matrix_mult1 -----")
+inverse_horizontal_matrix_mult1 = np.matmul(inverse_vertical_matrix_mult1, np.transpose(h1))
+print(inverse_horizontal_matrix_mult1)
+
+# Display the resulting image
+pyplot.imshow(inverse_horizontal_matrix_mult1, cmap=pyplot.get_cmap('gray'))
+
+
+
+# --- Inverse Haar wavelet transform ---
+# Vertical matrix multiplication (inverse)
+# h0.(s1')
+
+print("----- inverse_vertical_matrix_mult -----")
+inverse_vertical_matrix_mult = np.matmul(h0, vertical_matrix_mult)
+print(inverse_vertical_matrix_mult)
+
+# Horizontal matrix multiplication (inverse)
+# (s0')h0
+
+print("----- inverse_horizontal_matrix_mult -----")
+inverse_horizontal_matrix_mult = np.matmul(inverse_vertical_matrix_mult, np.transpose(h0))
+print(inverse_horizontal_matrix_mult)
+
+# Display the resulting image
+pyplot.imshow(inverse_horizontal_matrix_mult, cmap=pyplot.get_cmap('gray'))
