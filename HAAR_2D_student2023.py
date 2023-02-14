@@ -84,6 +84,7 @@ print(vertical_matrix_mult1)
 # Display final result
 pyplot.imshow(vertical_matrix_mult1, cmap=pyplot.get_cmap('gray'))
 
+'''
 #------------------------------------------------------
 # Inverse Haar wavelet transform (second sweep)
 # Vertical matrix multiplication (inverse)
@@ -123,3 +124,31 @@ print(inverse_horizontal_matrix_mult)
 
 # Display the resulting image
 pyplot.imshow(inverse_horizontal_matrix_mult, cmap=pyplot.get_cmap('gray'))
+'''
+
+
+# --- Thresholding ---
+C = 1.0  # Set the threshold value
+
+# Threshold the high-frequency coefficients
+thresholded_coeffs = np.copy(vertical_matrix_mult1)
+thresholded_coeffs[np.abs(thresholded_coeffs) < C] = 0
+
+# Inverse Haar wavelet transform with thresholding
+# Vertical matrix multiplication (inverse)
+# h1.(s2')
+
+print("----- inverse_vertical_matrix_mult1 -----")
+inverse_vertical_matrix_mult1 = np.matmul(h1, thresholded_coeffs)
+print(inverse_vertical_matrix_mult1)
+
+# Horizontal matrix multiplication (inverse)
+# (s1')h1
+
+print("----- inverse_horizontal_matrix_mult1 -----")
+inverse_horizontal_matrix_mult1 = np.matmul(inverse_vertical_matrix_mult1, np.transpose(h1))
+print(inverse_horizontal_matrix_mult1)
+
+# Display the resulting image
+pyplot.imshow(inverse_horizontal_matrix_mult1, cmap=pyplot.get_cmap('gray'))
+
