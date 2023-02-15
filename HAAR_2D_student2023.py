@@ -38,6 +38,7 @@ def haar_matrix(n):
     # Return the resulting matrix
     return matrix
 
+
 #---------------------
 # --- First sweep ---
 #---------------------
@@ -84,7 +85,6 @@ print(vertical_matrix_mult1)
 # Display final result
 pyplot.imshow(vertical_matrix_mult1, cmap=pyplot.get_cmap('gray'))
 
-'''
 #------------------------------------------------------
 # Inverse Haar wavelet transform (second sweep)
 # Vertical matrix multiplication (inverse)
@@ -124,31 +124,34 @@ print(inverse_horizontal_matrix_mult)
 
 # Display the resulting image
 pyplot.imshow(inverse_horizontal_matrix_mult, cmap=pyplot.get_cmap('gray'))
-'''
 
+def filter(image_path, C):
+    # Load image and convert to grayscale
+    image = Image.open(image_path).convert('L') 
+    data = np.copy(np.asarray(image))
+    datasize = 4096
+    data = data[0:datasize, 0:datasize]
+    data = data.astype('uint8')
+    
+    # Define Haar matrix of the correct size
+    matrix = haar_matrix(datasize)
+    
+    # Perform Haar transform on input image
+    transformed_data = np.matmul(matrix, np.matmul(data, matrix.T))
 
-# --- Thresholding ---
-C = 1.0  # Set the threshold value
+    # Set small coefficients to zero
+    transformed_data[np.abs(transformed_data) < C] = 0
 
-# Threshold the high-frequency coefficients
-thresholded_coeffs = np.copy(vertical_matrix_mult1)
-thresholded_coeffs[np.abs(thresholded_coeffs) < C] = 0
+    # Perform inverse Haar transform to get denoised image
+    inverse_matrix = np.linalg.inv(matrix)
+    denoised_data = np.matmul(inverse_matrix, np.matmul(transformed_data, inverse_matrix.T))
 
-# Inverse Haar wavelet transform with thresholding
-# Vertical matrix multiplication (inverse)
-# h1.(s2')
-
-print("----- inverse_vertical_matrix_mult1 -----")
-inverse_vertical_matrix_mult1 = np.matmul(h1, thresholded_coeffs)
-print(inverse_vertical_matrix_mult1)
-
-# Horizontal matrix multiplication (inverse)
-# (s1')h1
-
-print("----- inverse_horizontal_matrix_mult1 -----")
-inverse_horizontal_matrix_mult1 = np.matmul(inverse_vertical_matrix_mult1, np.transpose(h1))
-print(inverse_horizontal_matrix_mult1)
-
-# Display the resulting image
-pyplot.imshow(inverse_horizontal_matrix_mult1, cmap=pyplot.get_cmap('gray'))
-
+    # Plot original and denoised images
+    fig, axs = pyplot.subplots(1, 2)
+    axs[0].imshow(data, cmap=pyplot.get_cmap('gray'))
+    axs[0].set_title('Original image')
+    axs[1].imshow(denoised_data, cmap=pyplot.get_cmap('gray'))
+    axs[1].set_title('Denoised image (C={})'.format(C))
+    pyplot
+    
+filter('data_uppgift1.jpg', 10)    
