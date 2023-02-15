@@ -5,11 +5,12 @@ Created on Tue Feb 14 21:55:27 2023
 @author: Oualid Burström
 """
 
-import numpy as np
+import cupy as cp
 from PIL import Image
 from matplotlib import pyplot
+
 image = Image.open('data_uppgift1.jpg').convert('LA') 
-data = np.copy(np.asarray(image))
+data = cp.copy(cp.asarray(image))
 datasize=4096
 data=data[0:datasize, 0:datasize, 0]
 data=data.astype('uint8')
@@ -24,8 +25,8 @@ def haar_matrix(n):
     # Check if n is even
     if n % 2 != 0:
         raise ValueError("n must be an even number")
-    # Create a zero matrix of size n x n using NumPy
-    matrix = np.zeros((n, n))
+    # Create a zero matrix of size n x n using CuPy
+    matrix = cp.zeros((n, n))
     # Loop over the first half of the rows
     for i in range(n // 2):            
         # Set values in the matrix according to the Haar matrix formula
@@ -48,42 +49,42 @@ s0 = data
 
 # Horizontal matrix multiplication
 print("----- horizontal_matrix_mult -----")
-horizontal_matrix_mult = np.matmul(s0, h0)
+horizontal_matrix_mult = cp.matmul(s0, h0)
 print(horizontal_matrix_mult)
 
 # Display intermediate result
-pyplot.imshow(horizontal_matrix_mult, cmap=pyplot.get_cmap('gray'))
+pyplot.imshow(horizontal_matrix_mult.get(), cmap=pyplot.get_cmap('gray'))
 
 # Vertical matrix multiplication
 print("----- vertical_matrix_mult -----")
-vertical_matrix_mult = np.matmul(np.transpose(h0), horizontal_matrix_mult)
+vertical_matrix_mult = cp.matmul(cp.transpose(h0), horizontal_matrix_mult)
 print(vertical_matrix_mult)
 
 # Display final result
-pyplot.imshow(vertical_matrix_mult, cmap=pyplot.get_cmap('gray'))
+pyplot.imshow(vertical_matrix_mult.get(), cmap=pyplot.get_cmap('gray'))
 
 #---------------------
 # --- Second sweep ---
 #---------------------
 
-compressed1 = np.copy(vertical_matrix_mult)
+compressed1 = cp.copy(vertical_matrix_mult)
 h1 = haar_matrix(4096)
 
 # Horizontal matrix multiplication
 print("----- horizontal_matrix_mult1 -----")
-horizontal_matrix_mult1 = np.matmul(compressed1, h1)
+horizontal_matrix_mult1 = cp.matmul(compressed1, h1)
 print(horizontal_matrix_mult1)
 
 # Display intermediate result
-pyplot.imshow(horizontal_matrix_mult1, cmap=pyplot.get_cmap('gray'))
+pyplot.imshow(horizontal_matrix_mult1.get(), cmap=pyplot.get_cmap('gray'))
 
 # Vertical matrix multiplication
 print("----- vertical_matrix_mult1 -----")
-vertical_matrix_mult1 = np.matmul(np.transpose(h1), horizontal_matrix_mult1)
+vertical_matrix_mult1 = cp.matmul(cp.transpose(h1), horizontal_matrix_mult1)
 print(vertical_matrix_mult1)
 
 # Display final result
-pyplot.imshow(vertical_matrix_mult1, cmap=pyplot.get_cmap('gray'))
+pyplot.imshow(vertical_matrix_mult1.get(), cmap=pyplot.get_cmap('gray'))
 
 #------------------------------------------------------
 # Inverse Haar wavelet transform (second sweep)
@@ -92,18 +93,18 @@ pyplot.imshow(vertical_matrix_mult1, cmap=pyplot.get_cmap('gray'))
 #------------------------------------------------------
 
 print("----- inverse_vertical_matrix_mult1 -----")
-inverse_vertical_matrix_mult1 = np.matmul(h1, vertical_matrix_mult1)
+inverse_vertical_matrix_mult1 = cp.matmul(h1, vertical_matrix_mult1)
 print(inverse_vertical_matrix_mult1)
 
 # Horizontal matrix multiplication (inverse)
 # (s1')h1
 
 print("----- inverse_horizontal_matrix_mult1 -----")
-inverse_horizontal_matrix_mult1 = np.matmul(inverse_vertical_matrix_mult1, np.transpose(h1))
+inverse_horizontal_matrix_mult1 = cp.matmul(inverse_vertical_matrix_mult1, cp.transpose(h1))
 print(inverse_horizontal_matrix_mult1)
 
 # Display the resulting image
-pyplot.imshow(inverse_horizontal_matrix_mult1, cmap=pyplot.get_cmap('gray'))
+pyplot.imshow(inverse_horizontal_matrix_mult1.get(), cmap=pyplot.get_cmap('gray'))
 
 #-----------------------------------------------------
 # Inverse Haar wavelet transform (first sweep) 
@@ -112,18 +113,18 @@ pyplot.imshow(inverse_horizontal_matrix_mult1, cmap=pyplot.get_cmap('gray'))
 #------------------------------------------------------
 
 print("----- inverse_vertical_matrix_mult -----")
-inverse_vertical_matrix_mult = np.matmul(h0, vertical_matrix_mult)
+inverse_vertical_matrix_mult = cp.matmul(h0, vertical_matrix_mult)
 print(inverse_vertical_matrix_mult)
 
 # Horizontal matrix multiplication (inverse)
 # (s0')h0
 
 print("----- inverse_horizontal_matrix_mult -----")
-inverse_horizontal_matrix_mult = np.matmul(inverse_vertical_matrix_mult, np.transpose(h0))
+inverse_horizontal_matrix_mult = cp.matmul(inverse_vertical_matrix_mult, cp.transpose(h0))
 print(inverse_horizontal_matrix_mult)
 
 # Display the resulting image
-pyplot.imshow(inverse_horizontal_matrix_mult, cmap=pyplot.get_cmap('gray'))
+pyplot.imshow(inverse_horizontal_matrix_mult.get(), cmap=pyplot.get_cmap('gray'))
 
 #--------------------------------------
 # Filter definition
@@ -135,7 +136,7 @@ pyplot.imshow(inverse_horizontal_matrix_mult, cmap=pyplot.get_cmap('gray'))
 def filter(image_path, C):
     # Load image and convert to grayscale
     image = Image.open(image_path).convert('L') 
-    data = np.copy(np.asarray(image))
+    data = cp.copy(cp.asarray(image))
     datasize = 4096
     data = data[0:datasize, 0:datasize]
     data = data.astype('uint8')
@@ -144,20 +145,20 @@ def filter(image_path, C):
     matrix = haar_matrix(datasize)
     
     # Perform Haar transform on input image
-    transformed_data = np.matmul(matrix, np.matmul(data, matrix.T))
+    transformed_data = cp.matmul(matrix, cp.matmul(data, matrix.T))
 
     # Set small coefficients to zero
-    transformed_data[np.abs(transformed_data) < C] = 0
+    transformed_data[cp.abs(transformed_data) < C] = 0
 
     # Perform inverse Haar transform to get denoised image
-    inverse_matrix = np.linalg.inv(matrix)
-    denoised_data = np.matmul(inverse_matrix, np.matmul(transformed_data, inverse_matrix.T))
+    inverse_matrix = cp.linalg.inv(matrix)
+    denoised_data = cp.matmul(inverse_matrix, cp.matmul(transformed_data, inverse_matrix.T))
 
     # Plot original and denoised images
     fig, axs = pyplot.subplots(1, 2)
-    axs[0].imshow(data, cmap=pyplot.get_cmap('gray'))
+    axs[0].imshow(data.get(), cmap=pyplot.get_cmap('gray'))
     axs[0].set_title('Original image')
-    axs[1].imshow(denoised_data, cmap=pyplot.get_cmap('gray'))
+    axs[1].imshow(denoised_data.get(), cmap=pyplot.get_cmap('gray'))
     axs[1].set_title('Denoised image (C={})'.format(C))
     pyplot
     
