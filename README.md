@@ -14,7 +14,7 @@ Koden har skrivits och testats i Spyder som är en utvecklingsmiljö i Anaconda.
 <br>GPU: NVIDIA GeForce GTX 1060 6GB.
 
 ## Implementation
-Koden består av flera delar:
+Koden är välkommenterad och den består av flera delar:
 
 Importera nödvändiga bibliotek:
 
